@@ -1,0 +1,199 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [v0.13.1] — 2026-10-06
+
+### Fixed
+
+- **OpenCode V2 plugin migration**: `CCGSHooks`, `DriftDetector`, and `ChangelogGenerator`
+  ported to the OpenCode V2 `id`/`setup(ctx)` plugin contract and V2 hook payloads
+  (`ctx.tool.hook`, `ctx.event.subscribe`) in all six runtime/core-module copies (#107, #108)
+- **Project-scoped event handling**: events resolve to this project via envelope/nested
+  location or `session.get()` when location is omitted; foreign-project `session.created`
+  / `session.idle` events are ignored before archiving state (#108)
+- **Asset validation reporting**: invalid V2 asset output is reported through the completed
+  tool result instead of throwing from `execute.after` (#108)
+- **V2 `shell` tool recognition**: protected-branch push checks and changelog command
+  detection read V2 `shell` input; CCGS agent auditing handles V2 `subagent` invocations
+  and completions with correct ordering (#108)
+- **Session ID import**: `Session.ID` imported from `@opencode/schema/session` in all six
+  plugin copies (#108)
+- **Framework docs alignment**: agent/module counts and stale references corrected across
+  framework documentation (#106)
+- Plugin regression suite `test-plugin-v2.mjs` (19 tests); full suite now 177 tests passing
+
+---
+
+## [v0.13.0] — 2026-08-10
+
+### Added
+
+- **Bevy engine support** — brings Bevy to parity with the other five engine specialists:
+  - `engine-bevy` module (`.agents/modules/` and `.opencode/modules/` trees) with a single
+    `bevy-specialist` agent covering ECS, 2D/3D rendering, bevy_ui, assets, audio, input,
+    Cargo build, and WASM/mobile targets
+  - 12 version-pinned reference docs at `docs/engine-reference/bevy/` (pinned **Bevy
+    0.19.0**, HIGH knowledge-gap risk) — VERSION, breaking-changes, deprecated-apis,
+    current-best-practices, and 8 module guides, every API claim source-cited against
+    official Bevy 0.19 migration guides and docs.rs
+  - `/setup-engine` guided selection, tradeoffs, genre guidance, Cargo scaffold, and
+    specialist routing for Bevy
+  - Cross-cutting updates: AGENTS.md, README.md, `init-template` skill, `engine-code` rule
+    (Rust/Bevy zero-alloc example), agent roster (#104)
+
+### Fixed
+
+- **Bevy agent frontmatter leak**: the canonical `.agents/agents/bevy-specialist.md` carried
+  OpenCode-only `mode`/`model` frontmatter fields that belong solely in the
+  `.opencode/modules/` copy, breaking parity with every other canonical engine specialist
+  and the harness-agnostic contract
+- **Stale agent/module counts**: adding the 22nd module and 52nd agent left README.md and
+  AGENTS.md still reporting "21 modules" / "51 agents" in six places; corrected to 22/52
+
+---
+
+## [v0.12.1] — 2026-08-02
+
+### Fixed
+
+- **Windows `.opencode/` symlinks**: New `tools/fix-opencode-symlinks.mjs` repairs the
+  `.opencode/{agents,commands,skills,rules}` symlinks into real symlinks/junctions when a
+  Windows checkout (`core.symlinks=false`) materializes them as inert stub files, which
+  silently broke OpenCode's agent/skill/command discovery (#77, #93)
+- **`assign-models.js`**: Now points directly at the canonical `.agents/agents` directory
+  instead of the `.opencode/agents` symlink, so it no longer silently scans 0 agent files
+  when the symlink isn't materialized (#96)
+- **Plugin test docs**: `npm run test:plugins` was broken (`ERR_MODULE_NOT_FOUND`) and docs
+  told contributors to invoke `.mjs` test files directly, which fails without the `tsx` ESM
+  loader; both are fixed and now run 158/158 passing (#95)
+- **Stale doc counts**: Corrected command count (54 -> 77), test count (183 -> 158), and
+  module count (17 -> 21) across AGENTS.md, README.md, and docs/pi-compatibility.md (#94)
+
+### Changed
+
+- Bumped `actions/stale` from 10 to 11 (#92)
+- Added `.gitignore` pattern for stray `omp-session-*.html` coding-agent transcripts (#97)
+
+
+## [v0.11.0] — 2026-07-22
+
+### Added
+
+- **SFML 3 engine reference docs** — 9 files: VERSION, breaking changes, deprecated APIs,
+  current best practices, and module guides (graphics, audio, network, window, system)
+- **Raylib engine reference docs** — 10 files: VERSION, breaking changes, deprecated APIs,
+  current best practices, and module guides (core, rlgl, raudio, raymath, raygui, platforms)
+- Brings SFML 3 and Raylib to full parity with existing Godot, Unity, and Unreal engine
+  reference sets (#78, #85)
+
+### Fixed
+
+- **Pi compatibility**: Fixed module installer `--pi` flag, Pi config awareness in drift
+  detector, and cross-harness install path resolution (#84)
+- **Plugin code quality**: Removed dead code, fixed cross-platform notification paths,
+  improved E2E test coverage (#83)
+
+### Dependencies
+
+- Bumped `actions/setup-node` from 6 to 7 (#75)
+- Bumped `actions/checkout` from 6 to 7 (#74)
+
+
+## [v0.10.2] — 2026-06-22
+
+### Changed
+
+- **Pi docs**: Updated README.md, CONTRIBUTING.md, framework quick-start, and setup-requirements
+  to document Pi alongside OpenCode as a supported harness
+- **Gitignore**: Added `.superpowers/`, `docs/superpowers/`, and `framework/` paths
+
+### Housekeeping
+
+- Purged `docs/superpowers/` and `framework/` from git history (11 design docs, ~352KB)
+- Removed superpowers reference from CHANGELOG
+
+## [v0.10.1] — 2026-06-22
+
+### Changed
+
+- **Path canonicalization**: Moved framework reference docs from `.opencode/docs/` to `docs/framework/`
+  — 54 files (16 reference docs + 38 document templates), all re-referenced across 145 skill files
+- Updated `AGENTS.md` project structure to document `docs/framework/`
+
+### Fixed
+
+- **CLAUDE.md references**: 33 skill/agent files referenced non-existent `CLAUDE.md` instead of `AGENTS.md`
+- **Canonical agent/skill/command paths**: 21 files pointed at symlinked `.opencode/` paths instead of
+  canonical `.agents/` directories
+- **`.claude/` stale references**: 3 workflow-catalog.yaml copies referenced `.claude/docs/` instead of
+  `docs/framework/`
+- **Pi harness awareness**: MCP config sections (godot-mcp, unity-mcp) now document `pi.json` alongside
+  `opencode.json`; 5 Unity specialist agents updated to be harness-agnostic
+- **Question tool `maxItems`**: Raised from 4 to 10 to support larger option sets with scrolling UI,
+  number-key shortcuts (1-9), and aligned rendering
+- **Question tool `ReferenceError`**: Fixed `answerText` → `result.answer` in TUI result rendering
+- **`/brainstorm` → `/concept-brainstorm`**: Renamed to avoid clash with Superpowers brainstorming skill;
+  updated all CI/test references and module catalogs
+- **Question tool factory pattern**: Removed dead ternary (both branches returned same value)
+
+## [v0.10.0] — 2026-06-21
+
+### Added
+
+- **Multi-harness framework**: Migrated OCGS content to harness-agnostic `.agents/` directory
+- **ocgs-core**: Pi extension barrel for `.agents/` content discovery
+- **ocgs-delegation**: Task tool (vertical delegation) and `/consult` (peer review) for Pi
+- **ocgs-question**: Structured decision capture with TUI picker
+- **ocgs-path-guard**: Dynamic path-scoped rule injection for Pi
+- **ocgs-audit**: Byte-identical audit logging to `production/session-logs/agent-audit.log`
+- **ocgs-changelog**: Conventional-commit changelog generation with TUI modal
+- **ocgs-drift-detector**: Real-time structural drift detection with inline warnings
+- **ocgs-validate**: `.agents/` content validation on startup and post-write
+- Pi parity test suite (`tests/e2e/test-parity.test.ts`)
+
+### Changed
+
+- Content moved from `.opencode/` to `.agents/` (canonical, harness-agnostic)
+- `.opencode/{agents,skills,commands,rules}` replaced with symlinks to `.agents/`
+- `/changelog` renamed to `/generate-changelog` to avoid Pi built-in conflict
+- Agent frontmatter made harness-neutral (removed `model:`, `mode:`, `permission:`)
+- `ocgs-path-guard` uses inline glob matcher instead of `minimatch` dependency
+- `ocgs-core` barrel: content discovery only; Pi auto-discovers extensions independently
+- `ocgs-validate` scoped to agent files only for harness-field checks
+- Docs: fixed stale agent/command/skill counts across WORKFLOW-GUIDE, AGENTS.md,
+  README.md, and hybrid-workflow.md
+
+### Fixed
+
+- Double-load conflict between Pi auto-discovery and ocgs-core barrel
+- Symlink setup so OpenCode correctly discovers `.agents/` content
+- `.gitignore` entries removed for `.opencode/` symlinks (now tracked as git symlinks)
+
+### Added (docs)
+
+- `docs/pi-compatibility.md` — Pi setup guide
+- `docs/pi-extensions.md` — Pi extension reference
+- `docs/pi-workflow.md` — Pi workflow differences
+### Changed (docs)
+
+- All docs updated to reference `.agents/` paths instead of `.opencode/`
+- `AGENTS.md` now includes Pi section with cross-harness command comparison
+- `WORKFLOW-GUIDE.md` intro corrected from 48→51 agents, 68→54 commands
+- `README.md` directory tree shows `.agents/` as canonical source
+
+### Testing
+
+- Added Pi extension parity tests (`tests/e2e/`)
+- Added extension-specific tests (`tests/extensions/`)
+
+
+
+
+
+
